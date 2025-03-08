@@ -1,0 +1,217 @@
+﻿@model TicTacToe.Models.GameModel
+
+@{
+    ViewData["Title"] = "Tic-Tac-Toe";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+            padding-top: 30px;
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ffeb3b;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+            margin-bottom: 20px;
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .game-message {
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            padding: 15px 20px;
+            color: #ffeb3b;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            max-width: 300px;
+            margin: 10px auto;
+        }
+
+        .scoreboard {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            font-size: 18px;
+            width: 200px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+            .scoreboard h2 {
+                font-size: 24px;
+                color: #ffeb3b;
+                margin-bottom: 10px;
+            }
+
+            .scoreboard p {
+                font-size: 18px;
+                font-weight: bold;
+                margin: 5px 0;
+            }
+
+        table {
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        td {
+            width: 80px;
+            height: 80px;
+            text-align: center;
+            font-size: 36px;
+            font-weight: bold;
+            background-color: #fff;
+            border: 3px solid #2a5298;
+            transition: background-color 0.3s ease;
+            color: #333;
+        }
+
+            td.cell {
+                cursor: pointer;
+            }
+
+            td:hover {
+                background-color: #d1e0ff;
+            }
+
+            td button {
+                width: 100%;
+                height: 100%;
+                font-size: 36px;
+                background: none;
+                border: none;
+                cursor: pointer;
+                font-weight: bold;
+                transition: transform 0.2s;
+            }
+
+                td button:hover {
+                    transform: scale(1.1);
+                }
+
+                td button:focus {
+                    outline: none;
+                }
+
+        .x {
+            color: red;
+        }
+
+        .o {
+            color: blue;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #ffeb3b;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: -40px; /* Moves the buttons slightly upward */
+        }
+
+            button:hover {
+                background-color: #ff9800;
+                transform: scale(1.05);
+            }
+
+        form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>TicTacToe</h1>
+
+    <div class="scoreboard">
+        <h2>Scoreboard</h2>
+        <p><span class="x">Player X:</span> @Model.PlayerXScore</p>
+        <p><span class="o">Player O:</span> @Model.PlayerOScore</p>
+        <p>Draws: @Model.Draws</p>
+    </div>
+
+    <div class="game-container">
+        @if (!string.IsNullOrEmpty(Model.Message))
+        {
+            <p id="message" class="game-message">@Model.Message</p>
+        }
+
+        <form method="post" asp-action="MakeMove">
+            <table>
+                @for (int i = 0; i < 3; i++)
+                {
+                    <tr>
+                        @for (int j = 0; j < 3; j++)
+                        {
+                            <td class="cell">
+                                @if (Model.Board[i, j] == ' ')
+                                {
+                                    <button type="submit" name="row" value="@i" formaction="/Game/MakeMove?row=@i&col=@j"></button>
+                                }
+                                else
+                                {
+                                    <span class="@(Model.Board[i, j] == 'X' ? "x" : "o")">@Model.Board[i, j]</span>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </table>
+        </form>
+
+        <div class="controls">
+            <form method="get" asp-action="Reset">
+                <button type="submit">Reset Game</button>
+            </form>
+
+            <form method="get" asp-action="ToggleAI">
+                <button type="submit">@((Model.IsAIPlaying ? "Switch to Multiplayer" : "Switch to AI"))</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
